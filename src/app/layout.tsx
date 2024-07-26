@@ -5,6 +5,10 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "../../theme/theme";
 import MyHeader from "../../components/Layouts/Header";
+import { ToastProvider } from "../../providers/toast/ToastProvider";
+import { AuthProvider } from "../../providers/auth/AuthProvider";
+import AppLoading from "../../providers/loading/AppLoading";
+import { AppLoadingProvider } from "../../providers/loading/AppLoadingProvider";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -24,8 +28,16 @@ export default function RootLayout({
         <AppRouterCacheProvider options={{ key: "css" }}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <MyHeader />
-            {children}
+            <AppLoading>
+              <AppLoadingProvider>
+                <AuthProvider>
+                  <ToastProvider>
+                    <MyHeader />
+                    {children}
+                  </ToastProvider>
+                </AuthProvider>
+              </AppLoadingProvider>
+            </AppLoading>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

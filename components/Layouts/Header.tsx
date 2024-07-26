@@ -1,7 +1,9 @@
+"use client";
 import { Box, AppBar, Toolbar, Typography, Button } from "@mui/material";
 import Link from "next/link";
-// 'use client'
+import { useAuth } from "../../providers/auth/useAuth";
 export const MyHeader = () => {
+  const { username } = useAuth();
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -10,7 +12,11 @@ export const MyHeader = () => {
             <Link href="/">EbbudyTechnical</Link>
           </Typography>
           <Typography component={"div"} color="inherit">
-            <Link href="/login">Login</Link>
+            {username ? (
+              <Typography component={"p"}>Welcome, {username}</Typography>
+            ) : (
+              <Link href="/login">Login</Link>
+            )}
           </Typography>
         </Toolbar>
       </AppBar>

@@ -9,15 +9,50 @@ import {
   Button,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { useToast } from "../../providers/toast/useToast";
+import { useAppLoading } from "../../providers/loading/useAppLoading";
+import { useAuth } from "../../providers/auth/useAuth";
+import { useRouter } from "next/navigation";
 
 const SignIn = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter();
+  const { success, error, warn } = useToast();
+  const { setAppLoading } = useAppLoading();
+  const { setLogged } = useAuth();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("username"),
-      password: data.get("password"),
+    if (!data.get("username")) {
+      warn("Please input username");
+      return;
+    }
+    if (!data.get("password")) {
+      warn("Please input password");
+      return;
+    }
+    setAppLoading(true);
+
+    const resLoginApi = await fetch(`login/api`, {
+      method: "POST",
+
+      body: JSON.stringify({
+        username: data.get("username") as string,
+        password: data.get("password") as string,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
+    const resLogin = await resLoginApi.json();
+    if (resLogin?.data?.username) {
+      success(`Login success`);
+      setLogged(resLogin?.data?.username);
+      setAppLoading(false);
+      router.push("/");
+    } else {
+      error(`Login failed: ${resLogin?.error}`);
+      setAppLoading(false);
+    }
   };
   return (
     <Grid container component="main" sx={{ height: "100vh" }}>
